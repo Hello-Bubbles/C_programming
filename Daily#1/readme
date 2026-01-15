@@ -1,0 +1,59 @@
+## COBS Decoder (Hex Text File → Decoded Payload)
+
+### What this project does
+
+This program reads a normal `.txt` file containing **COBS-encoded bytes written in hex** and **prints the decoded payload bytes** (also in hex).
+Frames are separated using the delimiter byte **`00`**.
+
+### Input file format (`encoded.txt`)
+
+* The file contains **hex bytes as text**, e.g.:
+
+  * `03112203334400`
+  * or with spaces/newlines: `03 11 22 03 33 44 00`
+* Whitespace is optional (spaces/newlines/tabs can exist).
+* Each frame ends with delimiter **`00`**.
+
+Example (4 frames):
+`03 11 22 03 33 44 00 01 03 55 66 00 04 AA BB CC 00 02 10 01 02 20 01 00`
+
+### Output
+
+* The decoder prints decoded payload bytes in hex.
+* It also prints inserted `00` bytes where COBS restores zeros inside the payload.
+* (If your current code prints only to console, you can redirect output to a file.)
+
+### Build (GCC)
+
+Compile with GCC in terminal:
+
+* Use flags like `-Wall -Wextra` to catch warnings.
+
+### Run
+
+* Put your encoded stream in `encoded.txt`
+* Run the program
+* Check console output (or redirect output to a file)
+
+### Notes / Common pitfalls
+
+* `fgetc()` reads **ASCII characters** from the text file, so the program must convert **two hex characters → one byte** before decoding.
+* Handle:
+
+  * whitespace between hex digits/bytes
+  * lowercase `a-f` and uppercase `A-F`
+  * end-of-file safely (don’t try to read half a byte)
+* COBS rule reminder:
+
+  * Read **code**
+  * Copy **(code−1)** bytes
+  * Insert `00` only if **frame continues** and `code != 0xFF`
+
+### Quick verification example
+
+Encoded frame: `03 11 22 03 33 44 00`
+Decoded payload should be: `11 22 00 33 44`
+
+---
+
+
